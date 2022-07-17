@@ -171,7 +171,7 @@ class Airtouch2ACEntity(ClimateEntity):
         if hvac_mode == HVACMode.OFF and self._ac.on:
             self.turn_off()
         else:
-            if not self._ac_.on:
+            if not self._ac.on:
                 self.turn_on() 
             self._ac.set_mode(HA_MODE_TO_AT[hvac_mode])
 
