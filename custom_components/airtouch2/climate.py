@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Callable
 
 from airtouch2 import ACFanSpeed, ACMode, AT2Aircon, AT2Client
 
@@ -169,9 +168,11 @@ class Airtouch2ACEntity(ClimateEntity):
     # Methods
     def set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new target hvac mode."""
-        if hvac_mode == HVACMode.OFF:
+        if hvac_mode == HVACMode.OFF and self._ac.on:
             self.turn_off()
         else:
+            if not self._ac_.on:
+                self.turn_on() 
             self._ac.set_mode(HA_MODE_TO_AT[hvac_mode])
 
     def set_fan_mode(self, fan_mode: str) -> None:
