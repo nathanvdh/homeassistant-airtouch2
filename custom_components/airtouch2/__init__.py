@@ -30,8 +30,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not airtouch2_client.aircons:
         # no ACs found
         raise ConfigEntryNotReady("No AC units were found")
-
     hass.data[DOMAIN][entry.entry_id] = airtouch2_client
+
+    entry.async_on_unload(hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, lambda e: airtouch2_client.stop()))
 
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
 

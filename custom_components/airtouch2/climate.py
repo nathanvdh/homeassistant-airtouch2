@@ -59,16 +59,11 @@ async def async_setup_entry(
 
     _LOGGER.debug(" Found entities %s", entities)
     async_add_entities(entities)
-    stop_wrapper: Callable[[Event], None] = lambda e: airtouch2_client.stop()
-    config_entry.async_on_unload(hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, stop_wrapper))
 
 
 
 class Airtouch2ACEntity(ClimateEntity):
     """Representation of an AirTouch 2 ac."""
-
-    _attr_temperature_unit = TEMP_CELSIUS
-    _attr_precision = PRECISION_WHOLE
 
     def __init__(
         self, airtouch2_client: AT2Client, airtouch2_aircon: AT2Aircon
@@ -95,6 +90,13 @@ class Airtouch2ACEntity(ClimateEntity):
     def should_poll(self) -> bool:
         """Return whether the entity should poll."""
         return False
+    @property
+    def temperature_unit(self) -> str:
+        return TEMP_CELSIUS
+
+    @property
+    def precision(self) -> float:
+        return PRECISION_WHOLE
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -167,7 +169,10 @@ class Airtouch2ACEntity(ClimateEntity):
     # Methods
     def set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new target hvac mode."""
-        self._ac.set_mode(HA_MODE_TO_AT[hvac_mode])
+        if hvac_mode == HVACMode.OFF:
+            self.turn_off()
+        else:
+            self._ac.set_mode(HA_MODE_TO_AT[hvac_mode])
 
     def set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
@@ -179,9 +184,9 @@ class Airtouch2ACEntity(ClimateEntity):
         self._ac.set_set_temp(int(temp))
 
     def turn_off(self):
-        """Turn on."""
+        """Turn off."""
         self._ac.turn_off()
 
     def turn_on(self):
-        """Turn off."""
+        """Turn on."""
         self._ac.turn_on()
