@@ -44,7 +44,6 @@ AT2_TO_HA_FAN_SPEED = {
 HA_MODE_TO_AT = {value: key for key, value in AT2_TO_HA_MODE.items()}
 HA_FAN_SPEED_TO_AT2 = {value: key for key, value in AT2_TO_HA_FAN_SPEED.items()}
 
-
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
@@ -58,8 +57,6 @@ async def async_setup_entry(
 
     _LOGGER.debug(" Found entities %s", entities)
     async_add_entities(entities)
-
-
 
 class Airtouch2ACEntity(ClimateEntity):
     """Representation of an AirTouch 2 ac."""
