@@ -2,6 +2,8 @@
 
 _Component to integrate with Polyaire Airtouch 2._
 
+Utilizes [airtouch2-python](https://github.com/nathanvdh/airtouch2-python)
+
 **This component will set up the following platforms.**
 
 Platform | Description
