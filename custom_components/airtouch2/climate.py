@@ -167,8 +167,9 @@ class Airtouch2ACEntity(ClimateEntity):
     # Methods
     def set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new target hvac mode."""
-        if hvac_mode == HVACMode.OFF and self._ac.on:
-            self.turn_off()
+        if hvac_mode == HVACMode.OFF:
+            if self._ac.on:
+                self.turn_off()
         else:
             if not self._ac.on:
                 self.turn_on()
