@@ -31,7 +31,7 @@ class Airtouch2ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._async_abort_entries_match({CONF_HOST: host})
 
         airtouch2_client = AT2Client(host)
-        _LOGGER.warning("Starting client in config_flow")
+        _LOGGER.debug("Starting client in config_flow")
 
         if not airtouch2_client.start():
             # client could not connect
