@@ -3,15 +3,16 @@ from __future__ import annotations
 
 import logging
 
-from airtouch2 import ACFanSpeed, ACMode, AT2Aircon, AT2Client
+from airtouch2 import ACFanSpeedReference, ACMode, AT2Aircon, AT2Client
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     FAN_AUTO,
     FAN_DIFFUSE,
-    FAN_HIGH,
     FAN_LOW,
     FAN_MEDIUM,
+    FAN_HIGH,
+    FAN_FOCUS,
     ClimateEntityFeature,
     HVACMode,
 )
@@ -34,11 +35,12 @@ AT2_TO_HA_MODE = {
 }
 
 AT2_TO_HA_FAN_SPEED = {
-    ACFanSpeed.AUTO: FAN_AUTO,
-    ACFanSpeed.QUIET: FAN_DIFFUSE,
-    ACFanSpeed.LOW: FAN_LOW,
-    ACFanSpeed.MEDIUM: FAN_MEDIUM,
-    ACFanSpeed.HIGH: FAN_HIGH,
+    ACFanSpeedReference.AUTO: FAN_AUTO,
+    ACFanSpeedReference.QUIET: FAN_DIFFUSE,
+    ACFanSpeedReference.LOW: FAN_LOW,
+    ACFanSpeedReference.MEDIUM: FAN_MEDIUM,
+    ACFanSpeedReference.HIGH: FAN_HIGH,
+    ACFanSpeedReference.POWERFUL: FAN_FOCUS
 }
 
 HA_MODE_TO_AT = {value: key for key, value in AT2_TO_HA_MODE.items()}
@@ -147,7 +149,7 @@ class Airtouch2ACEntity(ClimateEntity):
     @property
     def fan_modes(self) -> list[str]:
         """Return the list of available fan modes."""
-        return list(AT2_TO_HA_FAN_SPEED.values())
+        return [AT2_TO_HA_FAN_SPEED[s] for s in self._ac.supported_fan_speeds]
 
     @property
     def hvac_mode(self) -> str:
@@ -169,7 +171,7 @@ class Airtouch2ACEntity(ClimateEntity):
             self.turn_off()
         else:
             if not self._ac.on:
-                self.turn_on() 
+                self.turn_on()
             self._ac.set_mode(HA_MODE_TO_AT[hvac_mode])
 
     def set_fan_mode(self, fan_mode: str) -> None:
