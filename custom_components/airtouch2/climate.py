@@ -119,7 +119,7 @@ class Airtouch2ACEntity(ClimateEntity):
     @property
     def current_temperature(self) -> float:
         """Return the current temperature."""
-        return self._ac.ambient_temp
+        return self._ac.measured_temp
 
     @property
     def target_temperature(self) -> float:
