@@ -17,3 +17,4 @@ Platform | Description
 1. Click install.
 1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "airtouch2".
 1. Enter the host address (IP) of the airtouch 2 system
+1. Check homeassistant logs and open an issue if gateway id is not recognised.
