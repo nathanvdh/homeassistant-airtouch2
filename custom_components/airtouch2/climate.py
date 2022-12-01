@@ -17,8 +17,8 @@ from homeassistant.components.climate.const import (
     HVACMode,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS, PRECISION_WHOLE, EVENT_HOMEASSISTANT_STOP
-from homeassistant.core import HomeAssistant, Event
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS, PRECISION_WHOLE
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -88,6 +88,7 @@ class Airtouch2ACEntity(ClimateEntity):
     def should_poll(self) -> bool:
         """Return whether the entity should poll."""
         return False
+
     @property
     def temperature_unit(self) -> str:
         return TEMP_CELSIUS
