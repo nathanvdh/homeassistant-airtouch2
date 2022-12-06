@@ -99,11 +99,12 @@ class AirTouch2GroupEntity(FanEntity):
         return self._group.damp*10
 
     def set_percentage(self, percentage: int):
+        if percentage == 0:
+            # FanEntity calls turn_off then this
+            return
         damp = int(percentage/10)
         # clamp between 1 and 10
         damp = max(min(damp, 10), 1)
-        if damp == self._group.damp:
-            return
         self._group.set_damp(damp)
 
     def turn_on(self, **kwargs):
