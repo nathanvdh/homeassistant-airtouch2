@@ -60,7 +60,7 @@ class AirTouch2GroupEntity(FanEntity):
     @property
     def unique_id(self) -> str:
         """Return unique ID for this device."""
-        return f"group_{self._group.number}"
+        return f"airtouch2_group_{self._group.number}"
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -75,7 +75,7 @@ class AirTouch2GroupEntity(FanEntity):
     @property
     def name(self):
         """Return the name of this device."""
-        return f"Group {self._group.name}"
+        return f"{self._group.name}"
 
     @property
     def is_on(self):
@@ -100,7 +100,7 @@ class AirTouch2GroupEntity(FanEntity):
 
     def set_percentage(self, percentage: int):
         if percentage == 0:
-            # FanEntity calls turn_off then this
+            # We don't need to do anything becaus FanEntity already calls turn_off
             return
         damp = int(percentage/10)
         # clamp between 1 and 10
