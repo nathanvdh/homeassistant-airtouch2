@@ -16,6 +16,7 @@ from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
 
+
 async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: ConfigEntry,
@@ -26,11 +27,13 @@ async def async_setup_entry(
     airtouch2_client: AT2Client = hass.data[DOMAIN][config_entry.entry_id]
     entities = []
     for group in airtouch2_client.groups:
+        # asyncio.sleep(0)
         group_entity = AirTouch2GroupEntity(airtouch2_client, group)
         entities.append(group_entity)
 
     if entities:
         async_add_entities(entities)
+
 
 class AirTouch2GroupEntity(FanEntity):
     def __init__(self, airtouch2_client: AT2Client, group: AT2Group):
@@ -98,20 +101,19 @@ class AirTouch2GroupEntity(FanEntity):
             return 0
         return self._group.damp*10
 
-    def set_percentage(self, percentage: int):
+    async def async_set_percentage(self, percentage: int):
         if percentage == 0:
             # We don't need to do anything becaus FanEntity already calls turn_off
             return
         damp = int(percentage/10)
         # clamp between 1 and 10
         damp = max(min(damp, 10), 1)
-        self._group.set_damp(damp)
+        await self._group.set_damp(damp)
 
-    def turn_on(self, **kwargs):
+    async def async_turn_on(self, **kwargs):
         if not self._group.on:
-            self._group.turn_on()
+            await self._group.turn_on()
 
-    def turn_off(self, **kwargs):
+    async def async_turn_off(self, **kwargs):
         if self._group.on:
-            self._group.turn_off()
-
+            await self._group.turn_off()

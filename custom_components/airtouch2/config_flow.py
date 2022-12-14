@@ -1,11 +1,11 @@
 """Config flow for airtouch2."""
+import asyncio
 import logging
 
 from airtouch2 import AT2Client
 import voluptuous as vol
 
 from homeassistant import config_entries
-
 from homeassistant.const import CONF_HOST
 
 from .const import DOMAIN
@@ -33,14 +33,16 @@ class Airtouch2ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         airtouch2_client = AT2Client(host)
         _LOGGER.debug("Starting client in config_flow")
 
-        if not airtouch2_client.start():
+        if not await airtouch2_client.connect():
             # client could not connect
             errors["base"] = "cannot_connect"
-        elif not airtouch2_client.aircons:
-            errors["base"] = "no_units"
+        else:
+            await airtouch2_client.run()
+            if not airtouch2_client.aircons:
+                errors["base"] = "no_units"
 
         # we only used the client to verify the config
-        airtouch2_client.stop()
+        await airtouch2_client.stop()
 
         if errors:
             return self.async_show_form(

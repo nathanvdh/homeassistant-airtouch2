@@ -44,7 +44,9 @@ AT2_TO_HA_FAN_SPEED = {
 }
 
 HA_MODE_TO_AT = {value: key for key, value in AT2_TO_HA_MODE.items()}
-HA_FAN_SPEED_TO_AT2 = {value: key for key, value in AT2_TO_HA_FAN_SPEED.items()}
+HA_FAN_SPEED_TO_AT2 = {value: key for key,
+                       value in AT2_TO_HA_FAN_SPEED.items()}
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -59,6 +61,7 @@ async def async_setup_entry(
 
     _LOGGER.debug(" Found entities %s", entities)
     async_add_entities(entities)
+
 
 class Airtouch2ACEntity(ClimateEntity):
     """Representation of an AirTouch 2 ac."""
@@ -166,29 +169,29 @@ class Airtouch2ACEntity(ClimateEntity):
         return list(AT2_TO_HA_MODE.values()) + [HVACMode.OFF]
 
     # Methods
-    def set_hvac_mode(self, hvac_mode: HVACMode) -> None:
+    async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new target hvac mode."""
         if hvac_mode == HVACMode.OFF:
             if self._ac.on:
-                self.turn_off()
+                await self.async_turn_off()
         else:
             if not self._ac.on:
-                self.turn_on()
-            self._ac.set_mode(HA_MODE_TO_AT[hvac_mode])
+                await self.async_turn_on()
+            await self._ac.set_mode(HA_MODE_TO_AT[hvac_mode])
 
-    def set_fan_mode(self, fan_mode: str) -> None:
+    async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
-        self._ac.set_fan_speed(HA_FAN_SPEED_TO_AT2[fan_mode])
+        await self._ac.set_fan_speed(HA_FAN_SPEED_TO_AT2[fan_mode])
 
-    def set_temperature(self, **kwargs) -> None:
+    async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
-        temp = kwargs.get(ATTR_TEMPERATURE)
-        self._ac.set_set_temp(int(temp))
+        temp = int(kwargs.get(ATTR_TEMPERATURE, 0))
+        await self._ac.set_set_temp(temp)
 
-    def turn_off(self):
+    async def async_turn_off(self):
         """Turn off."""
-        self._ac.turn_off()
+        await self._ac.turn_off()
 
-    def turn_on(self):
+    async def async_turn_on(self):
         """Turn on."""
-        self._ac.turn_on()
+        await self._ac.turn_on()

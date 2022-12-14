@@ -3,7 +3,7 @@
   "name": "airtouch2",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/airtouch2",
-  "requirements": ["airtouch2>=0.4.1"],
+  "requirements": ["airtouch2>=0.5b1"],
   "issue_tracker": "https://github.com/nathanvdh/homeassistant-airtouch2/issues",
   "ssdp": [],
   "zeroconf": [],
@@ -11,5 +11,5 @@
   "dependencies": [],
   "codeowners": ["@nathanvdh"],
   "iot_class": "local_push",
-  "version": "0.4.5"
+  "version": "0.5"
 }
