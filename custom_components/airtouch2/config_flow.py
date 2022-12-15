@@ -1,58 +1,80 @@
-"""Config flow for airtouch2."""
-import asyncio
+"""Config flow for airtouch2 integration."""
+from __future__ import annotations
+
 import logging
+from typing import Any
 
 from airtouch2 import AT2Client
 import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST
+from homeassistant.core import HomeAssistant
+from homeassistant.data_entry_flow import FlowResult
+from homeassistant.exceptions import HomeAssistantError
 
 from .const import DOMAIN
 
-DATA_SCHEMA = vol.Schema({vol.Required(CONF_HOST): str})
-
 _LOGGER = logging.getLogger(__name__)
 
+STEP_USER_DATA_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_HOST): str,
+    }
+)
 
-class Airtouch2ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle an Airtouch2 config flow."""
+async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
+    """Validate the user input allows us to connect."""
+    client = AT2Client(data[CONF_HOST])
+
+    if not await client.connect():
+        raise CannotConnect
+
+    await client.run()
+    if not client.aircons:
+        raise NoUnits
+
+    await client.stop()
+    # Return info that you want to store in the config entry.
+    return {"title": "Airtouch 2 Control System"}
+
+
+class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for airtouch2."""
 
     VERSION = 1
 
-    async def async_step_user(self, user_input=None):
-        """Handle a flow initialized by the user."""
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Handle the initial step."""
         if user_input is None:
-            return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA)
+            return self.async_show_form(
+                step_id="user", data_schema=STEP_USER_DATA_SCHEMA
+            )
 
         errors = {}
 
-        host = user_input[CONF_HOST]
-        self._async_abort_entries_match({CONF_HOST: host})
-
-        airtouch2_client = AT2Client(host)
-        _LOGGER.debug("Starting client in config_flow")
-
-        if not await airtouch2_client.connect():
-            # client could not connect
+        try:
+            info = await validate_input(self.hass, user_input)
+        except CannotConnect:
             errors["base"] = "cannot_connect"
+        except NoUnits:
+            errors["base"] = "no_units"
+        except Exception:  # pylint: disable=broad-except
+            _LOGGER.exception("Unexpected exception")
+            errors["base"] = "unknown"
         else:
-            await airtouch2_client.run()
-            if not airtouch2_client.aircons:
-                errors["base"] = "no_units"
+            return self.async_create_entry(title=info["title"], data=user_input)
 
-        # we only used the client to verify the config
-        await airtouch2_client.stop()
-
-        if errors:
-            return self.async_show_form(
-                step_id="user", data_schema=DATA_SCHEMA, errors=errors
-            )
-        _LOGGER.debug("Config flow success")
-
-        return self.async_create_entry(
-            title=user_input[CONF_HOST],
-            data={
-                CONF_HOST: user_input[CONF_HOST],
-            },
+        return self.async_show_form(
+            step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
+
+
+class CannotConnect(HomeAssistantError):
+    """Error to indicate we cannot connect."""
+
+
+class NoUnits(HomeAssistantError):
+    """Error to indicate there are no AC units found."""

@@ -1,23 +1,23 @@
-"""AirTouch 2 component to control of AirTouch 2 Climate Devices."""
+"""AirTouch 2 component to control AirTouch 2 Climate Device."""
 from __future__ import annotations
 
 import logging
 
 from airtouch2 import ACFanSpeedReference, ACMode, AT2Aircon, AT2Client
 
-from homeassistant.components.climate import ClimateEntity
-from homeassistant.components.climate.const import (
+from homeassistant.components.climate import (
     FAN_AUTO,
     FAN_DIFFUSE,
+    FAN_FOCUS,
+    FAN_HIGH,
     FAN_LOW,
     FAN_MEDIUM,
-    FAN_HIGH,
-    FAN_FOCUS,
+    ClimateEntity,
     ClimateEntityFeature,
     HVACMode,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS, PRECISION_WHOLE
+from homeassistant.const import ATTR_TEMPERATURE, PRECISION_WHOLE, TEMP_CELSIUS
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -40,12 +40,11 @@ AT2_TO_HA_FAN_SPEED = {
     ACFanSpeedReference.LOW: FAN_LOW,
     ACFanSpeedReference.MEDIUM: FAN_MEDIUM,
     ACFanSpeedReference.HIGH: FAN_HIGH,
-    ACFanSpeedReference.POWERFUL: FAN_FOCUS
+    ACFanSpeedReference.POWERFUL: FAN_FOCUS,
 }
 
 HA_MODE_TO_AT = {value: key for key, value in AT2_TO_HA_MODE.items()}
-HA_FAN_SPEED_TO_AT2 = {value: key for key,
-                       value in AT2_TO_HA_FAN_SPEED.items()}
+HA_FAN_SPEED_TO_AT2 = {value: key for key, value in AT2_TO_HA_FAN_SPEED.items()}
 
 
 async def async_setup_entry(
@@ -59,7 +58,7 @@ async def async_setup_entry(
         Airtouch2ACEntity(airtouch2_client, ac) for ac in airtouch2_client.aircons
     ]
 
-    _LOGGER.debug(" Found entities %s", entities)
+    _LOGGER.debug(f" Found entities {entities}")
     async_add_entities(entities)
 
 
@@ -86,7 +85,6 @@ class Airtouch2ACEntity(ClimateEntity):
     def _on_new_data(self) -> None:
         self.async_write_ha_state()
 
-    # Properties
     @property
     def should_poll(self) -> bool:
         """Return whether the entity should poll."""
@@ -94,10 +92,12 @@ class Airtouch2ACEntity(ClimateEntity):
 
     @property
     def temperature_unit(self) -> str:
+        """Return the unit of temperature measurement for the system."""
         return TEMP_CELSIUS
 
     @property
     def precision(self) -> float:
+        """Return the precision of the temperature in the system."""
         return PRECISION_WHOLE
 
     @property
@@ -131,13 +131,15 @@ class Airtouch2ACEntity(ClimateEntity):
         return self._ac.set_temp
 
     @property
-    def supported_features(self) -> int:
+    def supported_features(self) -> ClimateEntityFeature:
         """Return the list of supported features."""
         mode: ACMode = self._ac.mode
 
         # Dry mode supports no features
         if mode == ACMode.DRY:
-            return 0
+            # return 0
+            # only because there's no ClimateEntityFeature.NONE
+            return ClimateEntityFeature.TARGET_TEMPERATURE
 
         # Fan mode doesn't support target temperature
         if mode == ACMode.FAN:
@@ -168,7 +170,6 @@ class Airtouch2ACEntity(ClimateEntity):
         """Return the list of available operation modes."""
         return list(AT2_TO_HA_MODE.values()) + [HVACMode.OFF]
 
-    # Methods
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new target hvac mode."""
         if hvac_mode == HVACMode.OFF:
