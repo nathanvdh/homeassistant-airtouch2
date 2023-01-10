@@ -58,7 +58,7 @@ async def async_setup_entry(
         Airtouch2ACEntity(airtouch2_client, ac) for ac in airtouch2_client.aircons
     ]
 
-    _LOGGER.debug(f" Found entities {entities}")
+    _LOGGER.debug(" Found entities %s", entities)
     async_add_entities(entities)
 
 
@@ -74,16 +74,9 @@ class Airtouch2ACEntity(ClimateEntity):
 
     async def async_added_to_hass(self) -> None:
         """Call when entity is added."""
-        # Add callback for when client receives new data
+        # Add callback for when aircon receives new data
         # Removes callback on remove
-        self.async_on_remove(
-            # TODO don't subscribe this single entity to ALL changes
-            # i.e. Implement AC/Entity based callbacks rather than one list of callbacks for everything
-            self._airtouch2_client.add_callback(self._on_new_data)
-        )
-
-    def _on_new_data(self) -> None:
-        self.async_write_ha_state()
+        self.async_on_remove(self._ac.add_callback(self.async_write_ha_state))
 
     @property
     def should_poll(self) -> bool:

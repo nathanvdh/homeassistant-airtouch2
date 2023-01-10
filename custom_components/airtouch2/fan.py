@@ -45,17 +45,10 @@ class AirTouch2GroupEntity(FanEntity):
 
     async def async_added_to_hass(self) -> None:
         """Call when entity is added."""
-        # Add callback for when client receives new data
+        # Add callback for when group receives new data
         # Removes callback on remove
-        self.async_on_remove(
-            # TODO don't subscribe this single entity to ALL changes
-            # i.e. Implement AC/Entity based callbacks rather than one list of callbacks for everything
-            self._airtouch2_client.add_callback(self._on_new_data)
-        )
+        self.async_on_remove(self._group.add_callback(self.async_write_ha_state))
         _LOGGER.debug("fan::async_added_to_hass complete")
-
-    def _on_new_data(self) -> None:
-        self.async_write_ha_state()
 
     # Properties
     @property
