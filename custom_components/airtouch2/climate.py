@@ -1,23 +1,23 @@
-"""AirTouch 2 component to control of AirTouch 2 Climate Devices."""
+"""AirTouch 2 component to control AirTouch 2 Climate Device."""
 from __future__ import annotations
 
 import logging
 
 from airtouch2 import ACFanSpeedReference, ACMode, AT2Aircon, AT2Client
 
-from homeassistant.components.climate import ClimateEntity
-from homeassistant.components.climate.const import (
+from homeassistant.components.climate import (
     FAN_AUTO,
     FAN_DIFFUSE,
+    FAN_FOCUS,
+    FAN_HIGH,
     FAN_LOW,
     FAN_MEDIUM,
-    FAN_HIGH,
-    FAN_FOCUS,
+    ClimateEntity,
     ClimateEntityFeature,
     HVACMode,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS, PRECISION_WHOLE
+from homeassistant.const import ATTR_TEMPERATURE, PRECISION_WHOLE, TEMP_CELSIUS
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -40,11 +40,12 @@ AT2_TO_HA_FAN_SPEED = {
     ACFanSpeedReference.LOW: FAN_LOW,
     ACFanSpeedReference.MEDIUM: FAN_MEDIUM,
     ACFanSpeedReference.HIGH: FAN_HIGH,
-    ACFanSpeedReference.POWERFUL: FAN_FOCUS
+    ACFanSpeedReference.POWERFUL: FAN_FOCUS,
 }
 
 HA_MODE_TO_AT = {value: key for key, value in AT2_TO_HA_MODE.items()}
 HA_FAN_SPEED_TO_AT2 = {value: key for key, value in AT2_TO_HA_FAN_SPEED.items()}
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -60,6 +61,7 @@ async def async_setup_entry(
     _LOGGER.debug(" Found entities %s", entities)
     async_add_entities(entities)
 
+
 class Airtouch2ACEntity(ClimateEntity):
     """Representation of an AirTouch 2 ac."""
 
@@ -72,18 +74,10 @@ class Airtouch2ACEntity(ClimateEntity):
 
     async def async_added_to_hass(self) -> None:
         """Call when entity is added."""
-        # Add callback for when client receives new data
+        # Add callback for when aircon receives new data
         # Removes callback on remove
-        self.async_on_remove(
-            # TODO don't subscribe this single entity to ALL changes
-            # i.e. Implement AC/Entity based callbacks rather than one list of callbacks for everything
-            self._airtouch2_client.add_callback(self._on_new_data)
-        )
+        self.async_on_remove(self._ac.add_callback(self.async_write_ha_state))
 
-    def _on_new_data(self) -> None:
-        self.async_write_ha_state()
-
-    # Properties
     @property
     def should_poll(self) -> bool:
         """Return whether the entity should poll."""
@@ -91,10 +85,12 @@ class Airtouch2ACEntity(ClimateEntity):
 
     @property
     def temperature_unit(self) -> str:
+        """Return the unit of temperature measurement for the system."""
         return TEMP_CELSIUS
 
     @property
     def precision(self) -> float:
+        """Return the precision of the temperature in the system."""
         return PRECISION_WHOLE
 
     @property
@@ -128,13 +124,15 @@ class Airtouch2ACEntity(ClimateEntity):
         return self._ac.set_temp
 
     @property
-    def supported_features(self) -> int:
+    def supported_features(self) -> ClimateEntityFeature:
         """Return the list of supported features."""
         mode: ACMode = self._ac.mode
 
         # Dry mode supports no features
         if mode == ACMode.DRY:
-            return 0
+            # return 0
+            # only because there's no ClimateEntityFeature.NONE
+            return ClimateEntityFeature.TARGET_TEMPERATURE
 
         # Fan mode doesn't support target temperature
         if mode == ACMode.FAN:
@@ -165,30 +163,29 @@ class Airtouch2ACEntity(ClimateEntity):
         """Return the list of available operation modes."""
         return list(AT2_TO_HA_MODE.values()) + [HVACMode.OFF]
 
-    # Methods
-    def set_hvac_mode(self, hvac_mode: HVACMode) -> None:
+    async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new target hvac mode."""
         if hvac_mode == HVACMode.OFF:
             if self._ac.on:
-                self.turn_off()
+                await self.async_turn_off()
         else:
             if not self._ac.on:
-                self.turn_on()
-            self._ac.set_mode(HA_MODE_TO_AT[hvac_mode])
+                await self.async_turn_on()
+            await self._ac.set_mode(HA_MODE_TO_AT[hvac_mode])
 
-    def set_fan_mode(self, fan_mode: str) -> None:
+    async def async_set_fan_mode(self, fan_mode: str) -> None:
         """Set new target fan mode."""
-        self._ac.set_fan_speed(HA_FAN_SPEED_TO_AT2[fan_mode])
+        await self._ac.set_fan_speed(HA_FAN_SPEED_TO_AT2[fan_mode])
 
-    def set_temperature(self, **kwargs) -> None:
+    async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
-        temp = kwargs.get(ATTR_TEMPERATURE)
-        self._ac.set_set_temp(int(temp))
+        temp = int(kwargs.get(ATTR_TEMPERATURE, 0))
+        await self._ac.set_set_temp(temp)
 
-    def turn_off(self):
+    async def async_turn_off(self):
         """Turn off."""
-        self._ac.turn_off()
+        await self._ac.turn_off()
 
-    def turn_on(self):
+    async def async_turn_on(self):
         """Turn on."""
-        self._ac.turn_on()
+        await self._ac.turn_on()
