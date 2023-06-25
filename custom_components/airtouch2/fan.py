@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from airtouch2 import AT2Client, AT2Group
+from airtouch2 import At2Client, At2Group
 
 from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
@@ -24,7 +24,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up the AirTouch 2 group entities."""
     _LOGGER.debug("Setting up AirTouch 2 group entities")
-    airtouch2_client: AT2Client = hass.data[DOMAIN][config_entry.entry_id]
+    airtouch2_client: At2Client = hass.data[DOMAIN][config_entry.entry_id]
     entities = []
     for group in airtouch2_client.groups:
         # asyncio.sleep(0)
@@ -39,9 +39,8 @@ async def async_setup_entry(
 class AirTouch2GroupEntity(FanEntity):
     """Representation of an AirTouch 2 zone."""
 
-    def __init__(self, airtouch2_client: AT2Client, group: AT2Group) -> None:
+    def __init__(self, group: AT2Group) -> None:
         """Initialize the fan entity."""
-        self._airtouch2_client = airtouch2_client
         self._group = group
 
     async def async_added_to_hass(self) -> None:
