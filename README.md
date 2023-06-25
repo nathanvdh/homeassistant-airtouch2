@@ -10,7 +10,7 @@ Utilizes [airtouch2-python](https://github.com/nathanvdh/airtouch2-python)
 Platform | Description
 -- | --
 `climate` | Control temperature, mode, fan speed
-
+`fan`     | Control zones on/off and dampers
 
 ## Installation
 
