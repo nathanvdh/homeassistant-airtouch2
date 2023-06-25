@@ -1,15 +1,15 @@
 {
   "domain": "airtouch2",
   "name": "airtouch2",
-  "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/airtouch2",
-  "requirements": ["airtouch2==0.5"],
-  "issue_tracker": "https://github.com/nathanvdh/homeassistant-airtouch2/issues",
-  "ssdp": [],
-  "zeroconf": [],
-  "homekit": {},
-  "dependencies": [],
   "codeowners": ["@nathanvdh"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://www.home-assistant.io/integrations/airtouch2",
+  "homekit": {},
   "iot_class": "local_push",
-  "version": "0.5.2"
+  "issue_tracker": "https://github.com/nathanvdh/homeassistant-airtouch2/issues",
+  "requirements": ["airtouch2==0.7"],
+  "ssdp": [],
+  "version": "0.7",
+  "zeroconf": []
 }

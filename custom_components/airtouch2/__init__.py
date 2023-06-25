@@ -1,7 +1,7 @@
 """The airtouch2 integration."""
 from __future__ import annotations
 
-from airtouch2 import AT2Client
+from airtouch2 import At2Client
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, Platform
@@ -17,10 +17,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up airtouch2 from a config entry."""
 
     hass.data.setdefault(DOMAIN, {})
-    client = AT2Client(entry.data[CONF_HOST])
+    client = At2Client(entry.data[CONF_HOST])
     if not await client.connect():
         raise ConfigEntryNotReady("Airtouch2 client failed to connect")
-    await client.run()
+    client.run()
+    await client.wait_for_ac()
     if not client.aircons:
         raise ConfigEntryNotReady("No AC units were found")
     hass.data[DOMAIN][entry.entry_id] = client
@@ -32,7 +33,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
-        client: AT2Client = hass.data[DOMAIN][entry.entry_id]
+        client: At2Client = hass.data[DOMAIN][entry.entry_id]
         await client.stop()
         hass.data[DOMAIN].pop(entry.entry_id)
 

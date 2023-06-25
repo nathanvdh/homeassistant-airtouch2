@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 
-from airtouch2 import ACFanSpeedReference, ACMode, AT2Aircon, AT2Client
+from airtouch2 import ACFanSpeedReference, ACMode, At2Aircon, At2Client
 
 from homeassistant.components.climate import (
     FAN_AUTO,
@@ -53,9 +53,9 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the Airtouch 2."""
-    airtouch2_client = hass.data[DOMAIN][config_entry.entry_id]
+    airtouch2_client: At2Client = hass.data[DOMAIN][config_entry.entry_id]
     entities: list[ClimateEntity] = [
-        Airtouch2ACEntity(airtouch2_client, ac) for ac in airtouch2_client.aircons
+        Airtouch2ACEntity(ac) for ac in airtouch2_client.aircons
     ]
 
     _LOGGER.debug(" Found entities %s", entities)
@@ -66,10 +66,9 @@ class Airtouch2ACEntity(ClimateEntity):
     """Representation of an AirTouch 2 ac."""
 
     def __init__(
-        self, airtouch2_client: AT2Client, airtouch2_aircon: AT2Aircon
+        self, airtouch2_aircon: At2Aircon
     ) -> None:
         """Initialize the climate device."""
-        self._airtouch2_client = airtouch2_client
         self._ac = airtouch2_aircon
 
     async def async_added_to_hass(self) -> None:

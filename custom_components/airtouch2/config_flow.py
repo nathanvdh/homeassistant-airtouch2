@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from airtouch2 import AT2Client
+from airtouch2 import At2Client
 import voluptuous as vol
 
 from homeassistant import config_entries
@@ -25,12 +25,14 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
-    client = AT2Client(data[CONF_HOST])
+    client = At2Client(data[CONF_HOST])
 
     if not await client.connect():
         raise CannotConnect
 
-    await client.run()
+    client.run()
+
+    await client.wait_for_ac()
     if not client.aircons:
         raise NoUnits
 

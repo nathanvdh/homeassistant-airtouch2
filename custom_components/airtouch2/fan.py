@@ -27,12 +27,14 @@ async def async_setup_entry(
     airtouch2_client: AT2Client = hass.data[DOMAIN][config_entry.entry_id]
     entities = []
     for group in airtouch2_client.groups:
+        # asyncio.sleep(0)
         group_entity = AirTouch2GroupEntity(airtouch2_client, group)
         entities.append(group_entity)
 
     if entities:
         async_add_entities(entities)
     _LOGGER.debug("fan::async_setup_entry complete")
+
 
 
 class AirTouch2GroupEntity(FanEntity):
