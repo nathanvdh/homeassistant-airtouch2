@@ -19,7 +19,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     client = At2Client(entry.data[CONF_HOST])
     if not await client.connect():
-        raise ConfigEntryNotReady("Airtouch2 client failed to connect")
+        raise ConfigEntryNotReady(
+            f"Airtouch2 client failed to connect to {entry.data[CONF_HOST]}")
     client.run()
     await client.wait_for_ac()
     if not client.aircons:
