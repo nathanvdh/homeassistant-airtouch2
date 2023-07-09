@@ -2,16 +2,15 @@
 from __future__ import annotations
 
 from airtouch2 import At2Client
+from .Airtouch2GroupEntity import AirTouch2GroupEntity
+from .const import DOMAIN
 
 import logging
 from typing import Any
 
-from homeassistant.components.airtouch2.Airtouch2GroupEntity import AirTouch2GroupEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
-from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
