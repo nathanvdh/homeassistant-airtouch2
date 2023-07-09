@@ -1,5 +1,7 @@
 
 from airtouch2 import At2Aircon, ACMode
+from .conversions import AT2_TO_HA_FAN_SPEED, AT2_TO_HA_MODE, HA_MODE_TO_AT2, HA_FAN_SPEED_TO_AT2
+from .const import DOMAIN
 
 from typing import final
 
@@ -12,8 +14,6 @@ from homeassistant.components.climate import (
     PRECISION_WHOLE
 )
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.components.airtouch2.conversions import AT2_TO_HA_FAN_SPEED, AT2_TO_HA_MODE, HA_MODE_TO_AT2, HA_FAN_SPEED_TO_AT2
-from homeassistant.components.airtouch2.const import DOMAIN
 
 
 @final

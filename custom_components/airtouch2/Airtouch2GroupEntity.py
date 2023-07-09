@@ -1,13 +1,15 @@
 from airtouch2 import At2Group
 
+from .const import DOMAIN
+
 from typing import Any, final
 import logging
 
 from homeassistant.components.fan import FanEntity, FanEntityFeature
-from homeassistant.components.airtouch2.const import DOMAIN
 from homeassistant.helpers.entity import DeviceInfo
 
 _LOGGER = logging.getLogger(__name__)
+
 
 @final
 class AirTouch2GroupEntity(FanEntity):
@@ -17,7 +19,6 @@ class AirTouch2GroupEntity(FanEntity):
     # Entity attributes:
     #
     _attr_should_poll: bool = False
-
 
     def __init__(self, group: At2Group) -> None:
         """Initialize the fan entity."""
@@ -54,7 +55,6 @@ class AirTouch2GroupEntity(FanEntity):
         self.async_on_remove(
             self._group.add_callback(self.async_write_ha_state))
         _LOGGER.debug("fan::async_added_to_hass complete")
-
 
     #
     # FanEntity overrides
