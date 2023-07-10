@@ -1,5 +1,5 @@
 # Airtouch 2 integration
-THIS DOES **NOT** SUPPORT AIRTOUCH 2 **PLUS**
+Now with basic support for airtouch2+ in beta/testing.
 
 _Component to integrate with Polyaire Airtouch 2._
 
