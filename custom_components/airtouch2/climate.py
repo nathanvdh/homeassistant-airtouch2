@@ -1,7 +1,7 @@
 """AirTouch 2 component to control AirTouch 2 Climate Device."""
 from __future__ import annotations
 
-from airtouch2 import At2Client
+from airtouch2.at2 import At2Client
 from .Airtouch2ClimateEntity import Airtouch2ClimateEntity
 from .const import DOMAIN
 

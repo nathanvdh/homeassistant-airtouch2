@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from airtouch2 import At2Client
+from airtouch2.at2 import At2Client
 import voluptuous as vol
 
 from homeassistant import config_entries

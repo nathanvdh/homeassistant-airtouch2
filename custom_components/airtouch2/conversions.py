@@ -1,4 +1,4 @@
-from airtouch2 import ACFanSpeedReference, ACMode, At2Aircon, At2Client
+from airtouch2.at2 import ACFanSpeedReference, ACMode
 from homeassistant.components.climate import (
     FAN_AUTO,
     FAN_DIFFUSE,

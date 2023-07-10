@@ -1,7 +1,7 @@
 """The airtouch2 integration."""
 from __future__ import annotations
 
-from airtouch2 import At2Client
+from airtouch2.at2 import At2Client
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, Platform

@@ -1,4 +1,4 @@
-from airtouch2 import At2Group
+from airtouch2.at2 import At2Group
 
 from .const import DOMAIN
 
