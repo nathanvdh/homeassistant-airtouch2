@@ -1,6 +1,11 @@
 
 from airtouch2.at2 import At2Aircon, ACMode
-from .conversions import AT2_TO_HA_FAN_SPEED, AT2_TO_HA_MODE, HA_MODE_TO_AT2, HA_FAN_SPEED_TO_AT2
+from .conversions import (
+    AT2_TO_HA_MODE,
+    AT2_TO_HA_FAN_SPEED,
+    HA_MODE_TO_AT2,
+    HA_FAN_SPEED_TO_AT2
+)
 from .const import DOMAIN
 
 from typing import final
