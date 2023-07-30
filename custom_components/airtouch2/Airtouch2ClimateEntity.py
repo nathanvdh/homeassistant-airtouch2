@@ -50,12 +50,12 @@ class Airtouch2ClimateEntity(ClimateEntity):
     @property
     def unique_id(self) -> str:
         """Return unique ID for this device."""
-        return f"at2_ac_{self._ac.number}"
+        return f"at2_ac_{self._ac.info.number}"
 
     @property
     def name(self):
         """Return the name of the entity."""
-        return f"AC {self._ac.name}"
+        return f"AC {self._ac.info.name}"
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -69,8 +69,8 @@ class Airtouch2ClimateEntity(ClimateEntity):
 
     async def async_added_to_hass(self) -> None:
         """Call when entity is added."""
-        # Add callback for when aircon receives new data
-        # Removes callback on remove
+        # Add callback for when aircon receives new data.
+        # Removes callback on remove.
         self.async_on_remove(self._ac.add_callback(self.async_write_ha_state))
 
     #
@@ -80,10 +80,10 @@ class Airtouch2ClimateEntity(ClimateEntity):
     @property
     def hvac_mode(self) -> str:
         """Return hvac operation ie. heat, cool mode."""
-        if not self._ac.on:
+        if not self._ac.info.active:
             return HVACMode.OFF
 
-        return AT2_TO_HA_MODE[self._ac.mode]
+        return AT2_TO_HA_MODE[self._ac.info.mode]
 
     @property
     def hvac_modes(self) -> list[HVACMode]:
@@ -93,22 +93,22 @@ class Airtouch2ClimateEntity(ClimateEntity):
     @property
     def current_temperature(self) -> float:
         """Return the current temperature."""
-        return self._ac.measured_temp
+        return self._ac.info.measured_temp
 
     @property
     def target_temperature(self) -> float:
         """Return the temperature we try to reach."""
-        return self._ac.set_temp
+        return self._ac.info.set_temp
 
     @property
     def fan_mode(self) -> str:
         """Return fan mode of this AC."""
-        return AT2_TO_HA_FAN_SPEED[self._ac.fan_speed]
+        return AT2_TO_HA_FAN_SPEED[self._ac.info.fan_speed]
 
     @property
     def fan_modes(self) -> list[str]:
         """Return the list of available fan modes."""
-        return [AT2_TO_HA_FAN_SPEED[s] for s in self._ac.supported_fan_speeds]
+        return [AT2_TO_HA_FAN_SPEED[s] for s in self._ac.info.supported_fan_speeds]
 
     async def async_set_temperature(self, **kwargs) -> None:
         """Set new target temperature."""
@@ -122,10 +122,10 @@ class Airtouch2ClimateEntity(ClimateEntity):
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set new target hvac mode."""
         if hvac_mode == HVACMode.OFF:
-            if self._ac.on:
+            if self._ac.info.active:
                 await self.async_turn_off()
         else:
-            if not self._ac.on:
+            if not self._ac.info.active:
                 await self.async_turn_on()
             await self._ac.set_mode(HA_MODE_TO_AT2[hvac_mode])
 
@@ -140,7 +140,7 @@ class Airtouch2ClimateEntity(ClimateEntity):
     @property
     def supported_features(self) -> ClimateEntityFeature:
         """Return the list of supported features."""
-        mode: ACMode = self._ac.mode
+        mode: ACMode = self._ac.info.mode
 
         # Dry mode supports no features
         if mode == ACMode.DRY:

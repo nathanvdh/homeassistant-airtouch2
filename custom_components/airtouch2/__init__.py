@@ -23,7 +23,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             f"Airtouch2 client failed to connect to {entry.data[CONF_HOST]}")
     client.run()
     await client.wait_for_ac()
-    if not client.aircons:
+    if not client.aircons_by_id:
         raise ConfigEntryNotReady("No AC units were found")
     hass.data[DOMAIN][entry.entry_id] = client
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

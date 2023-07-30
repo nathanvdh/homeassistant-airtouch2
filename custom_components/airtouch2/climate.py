@@ -6,6 +6,7 @@ from .Airtouch2ClimateEntity import Airtouch2ClimateEntity
 from .const import DOMAIN
 
 import logging
+from pprint import pprint
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.config_entries import ConfigEntry
@@ -23,8 +24,8 @@ async def async_setup_entry(
     """Set up the Airtouch 2."""
     airtouch2_client: At2Client = hass.data[DOMAIN][config_entry.entry_id]
     entities: list[ClimateEntity] = [
-        Airtouch2ClimateEntity(ac) for ac in airtouch2_client.aircons
+        Airtouch2ClimateEntity(ac) for ac in airtouch2_client.aircons_by_id.values()
     ]
 
-    _LOGGER.debug(" Found entities %s", entities)
-    async_add_entities(entities)
+    if entities:
+        async_add_entities(entities)

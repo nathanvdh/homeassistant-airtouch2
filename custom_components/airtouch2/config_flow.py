@@ -29,7 +29,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     client.run()
 
     await client.wait_for_ac()
-    if not client.aircons:
+    if not client.aircons_by_id:
         raise NoUnits
 
     await client.stop()

@@ -1,4 +1,4 @@
-from airtouch2.at2 import ACFanSpeedReference, ACMode
+from airtouch2.at2 import ACFanSpeed, ACMode
 from homeassistant.components.climate import (
     FAN_AUTO,
     FAN_DIFFUSE,
@@ -19,12 +19,12 @@ AT2_TO_HA_MODE = {
 }
 
 AT2_TO_HA_FAN_SPEED = {
-    ACFanSpeedReference.AUTO: FAN_AUTO,
-    ACFanSpeedReference.QUIET: FAN_DIFFUSE,
-    ACFanSpeedReference.LOW: FAN_LOW,
-    ACFanSpeedReference.MEDIUM: FAN_MEDIUM,
-    ACFanSpeedReference.HIGH: FAN_HIGH,
-    ACFanSpeedReference.POWERFUL: FAN_FOCUS,
+    ACFanSpeed.AUTO: FAN_AUTO,
+    ACFanSpeed.QUIET: FAN_DIFFUSE,
+    ACFanSpeed.LOW: FAN_LOW,
+    ACFanSpeed.MEDIUM: FAN_MEDIUM,
+    ACFanSpeed.HIGH: FAN_HIGH,
+    ACFanSpeed.POWERFUL: FAN_FOCUS,
 }
 
 # inverse lookups

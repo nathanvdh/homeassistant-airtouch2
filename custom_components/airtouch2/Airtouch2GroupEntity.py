@@ -31,12 +31,12 @@ class AirTouch2GroupEntity(FanEntity):
     @property
     def unique_id(self) -> str:
         """Return unique ID for this device."""
-        return f"airtouch2_group_{self._group.number}"
+        return f"airtouch2_group_{self._group.info.number}"
 
     @property
     def name(self):
         """Return the name of this group."""
-        return f"{self._group.name}"
+        return f"{self._group.info.name}"
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -50,11 +50,10 @@ class AirTouch2GroupEntity(FanEntity):
 
     async def async_added_to_hass(self) -> None:
         """Call when entity is added."""
-        # Add callback for when group receives new data
-        # Removes callback on remove
+        # Add callback for when group receives new data.
+        # Removes callback on remove.
         self.async_on_remove(
             self._group.add_callback(self.async_write_ha_state))
-        _LOGGER.debug("fan::async_added_to_hass complete")
 
     #
     # FanEntity overrides
@@ -77,7 +76,7 @@ class AirTouch2GroupEntity(FanEntity):
         **kwargs: Any,
     ) -> None:
         """Turn on the group."""
-        if not self._group.on:
+        if not self._group.info.active:
             await self._group.turn_on()
         if percentage:
             await self.async_set_percentage(percentage)
@@ -85,14 +84,14 @@ class AirTouch2GroupEntity(FanEntity):
     @property
     def is_on(self):
         """Return if group is on."""
-        return self._group.on
+        return self._group.info.active
 
     @property
     def percentage(self) -> int:
         """Return current percentage of the group damper."""
-        if not self._group.on:
+        if not self._group.info.active:
             return 0
-        return self._group.damp * 10
+        return self._group.info.damp * 10
 
     @property
     def speed_count(self) -> int:
@@ -110,5 +109,5 @@ class AirTouch2GroupEntity(FanEntity):
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn off the group."""
-        if self._group.on:
+        if self._group.info.active:
             await self._group.turn_off()
