@@ -9,6 +9,7 @@ from .conversions import (
 from .const import DOMAIN
 
 from typing import final
+import logging
 
 from homeassistant.components.climate import (
     ClimateEntity,
@@ -20,6 +21,7 @@ from homeassistant.components.climate import (
 )
 from homeassistant.helpers.entity import DeviceInfo
 
+_LOGGER = logging.getLogger(__name__)
 
 @final
 class Airtouch2ClimateEntity(ClimateEntity):
@@ -41,6 +43,7 @@ class Airtouch2ClimateEntity(ClimateEntity):
         self, airtouch2_aircon: At2Aircon
     ) -> None:
         """Initialize the climate device."""
+        _LOGGER.debug(f"Initializing climate device '{airtouch2_aircon.info.name}'")
         self._ac = airtouch2_aircon
 
     #
