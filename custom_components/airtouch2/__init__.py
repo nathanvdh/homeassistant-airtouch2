@@ -27,6 +27,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         raise ConfigEntryNotReady("No AC units were found")
     hass.data[DOMAIN][entry.entry_id] = client
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    # Reload entry when its updated.
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
     return True
@@ -42,4 +44,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Reload the config entry when it changed."""
     await hass.config_entries.async_reload(entry.entry_id)
