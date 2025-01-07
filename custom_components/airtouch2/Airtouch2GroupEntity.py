@@ -52,8 +52,7 @@ class AirTouch2GroupEntity(FanEntity):
         """Call when entity is added."""
         # Add callback for when group receives new data.
         # Removes callback on remove.
-        self.async_on_remove(
-            self._group.add_callback(self.async_write_ha_state))
+        self.async_on_remove(self._group.add_callback(self.async_write_ha_state))
 
     #
     # FanEntity overrides
