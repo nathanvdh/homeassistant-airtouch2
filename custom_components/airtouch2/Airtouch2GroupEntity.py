@@ -1,12 +1,11 @@
-from airtouch2.at2 import At2Group
-
-from .const import DOMAIN
-
-from typing import Any, final
 import logging
+from typing import Any, final
 
+from airtouch2.at2 import At2Group
 from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.helpers.entity import DeviceInfo
+
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
