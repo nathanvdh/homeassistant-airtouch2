@@ -101,7 +101,11 @@ class AirTouch2GroupEntity(FanEntity):
     @property
     def supported_features(self) -> FanEntityFeature:
         """Fan supported features."""
-        return FanEntityFeature.SET_SPEED
+        return (
+            FanEntityFeature.TURN_ON
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.SET_SPEED
+        )
 
     #
     # ToggleEntity overrides:
