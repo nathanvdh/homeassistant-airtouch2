@@ -1,3 +1,5 @@
+"""AirTouch2 zone entity."""
+
 import logging
 from typing import Any, final
 
