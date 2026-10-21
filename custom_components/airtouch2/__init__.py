@@ -8,7 +8,10 @@ from homeassistant.const import CONF_HOST, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 
+from . import connection_fix
 from .const import DOMAIN
+
+connection_fix.apply()
 
 PLATFORMS: list[Platform] = [Platform.CLIMATE, Platform.FAN]
 
@@ -39,6 +42,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         client: At2Client = hass.data[DOMAIN][entry.entry_id]
         await client.stop()
+        # Close the socket too, so a reload does not leave the old connection
+        # open on the AirTouch.
+        await connection_fix.close_writer(client._client._writer)
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
