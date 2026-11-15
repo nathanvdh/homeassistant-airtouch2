@@ -1,8 +1,8 @@
 """The airtouch2 integration."""
+
 from __future__ import annotations
 
 from airtouch2.at2 import At2Client
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, Platform
 from homeassistant.core import HomeAssistant
@@ -20,7 +20,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     client = At2Client(entry.data[CONF_HOST])
     if not await client.connect():
         raise ConfigEntryNotReady(
-            f"Airtouch2 client failed to connect to {entry.data[CONF_HOST]}")
+            f"Airtouch2 client failed to connect to {entry.data[CONF_HOST]}"
+        )
     client.run()
     await client.wait_for_ac()
     if not client.aircons_by_id:
@@ -42,6 +43,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload the config entry when it changed."""
