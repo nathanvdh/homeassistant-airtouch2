@@ -3,13 +3,11 @@ from typing import final
 
 from airtouch2.at2 import ACMode, At2Aircon
 from homeassistant.components.climate import (
-    ATTR_TEMPERATURE,
-    PRECISION_WHOLE,
     ClimateEntity,
     ClimateEntityFeature,
     HVACMode,
-    UnitOfTemperature,
 )
+from homeassistant.const import ATTR_TEMPERATURE, PRECISION_WHOLE, UnitOfTemperature
 from homeassistant.helpers.entity import DeviceInfo
 
 from .const import DOMAIN
