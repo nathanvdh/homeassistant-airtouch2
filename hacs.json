@@ -1,4 +1,5 @@
 
 {
-    "name": "Airtouch2"
+    "name": "Airtouch2",
+    "homeassistant": "2026.11"
 }
