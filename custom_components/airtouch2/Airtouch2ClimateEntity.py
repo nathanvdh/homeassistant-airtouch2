@@ -1,27 +1,27 @@
-
-from airtouch2.at2 import At2Aircon, ACMode
-from .conversions import (
-    AT2_TO_HA_MODE,
-    AT2_TO_HA_FAN_SPEED,
-    HA_MODE_TO_AT2,
-    HA_FAN_SPEED_TO_AT2
-)
-from .const import DOMAIN
-
-from typing import final
 import logging
+from typing import final
 
+from airtouch2.at2 import ACMode, At2Aircon
 from homeassistant.components.climate import (
+    ATTR_TEMPERATURE,
+    PRECISION_WHOLE,
     ClimateEntity,
     ClimateEntityFeature,
     HVACMode,
     UnitOfTemperature,
-    ATTR_TEMPERATURE,
-    PRECISION_WHOLE
 )
 from homeassistant.helpers.entity import DeviceInfo
 
+from .const import DOMAIN
+from .conversions import (
+    AT2_TO_HA_FAN_SPEED,
+    AT2_TO_HA_MODE,
+    HA_FAN_SPEED_TO_AT2,
+    HA_MODE_TO_AT2,
+)
+
 _LOGGER = logging.getLogger(__name__)
+
 
 @final
 class Airtouch2ClimateEntity(ClimateEntity):
@@ -39,9 +39,7 @@ class Airtouch2ClimateEntity(ClimateEntity):
     _attr_target_temperature_step: float = 1.0
     _attr_temperature_unit: str = UnitOfTemperature.CELSIUS
 
-    def __init__(
-        self, airtouch2_aircon: At2Aircon
-    ) -> None:
+    def __init__(self, airtouch2_aircon: At2Aircon) -> None:
         """Initialize the climate device."""
         _LOGGER.debug(f"Initializing climate device '{airtouch2_aircon.info.name}'")
         self._ac = airtouch2_aircon
@@ -154,4 +152,9 @@ class Airtouch2ClimateEntity(ClimateEntity):
         if mode == ACMode.FAN:
             return ClimateEntityFeature.FAN_MODE
 
-        return ClimateEntityFeature.TURN_OFF | ClimateEntityFeature.TURN_ON | ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.FAN_MODE
+        return (
+            ClimateEntityFeature.TURN_OFF
+            | ClimateEntityFeature.TURN_ON
+            | ClimateEntityFeature.TARGET_TEMPERATURE
+            | ClimateEntityFeature.FAN_MODE
+        )
