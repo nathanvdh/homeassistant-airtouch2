@@ -35,7 +35,7 @@ class Airtouch2ClimateEntity(ClimateEntity):
     #
     _attr_precision: float = PRECISION_WHOLE
     _attr_target_temperature_step: float = 1.0
-    _attr_temperature_unit: str = UnitOfTemperature.CELSIUS
+    _attr_native_temperature_unit: str = UnitOfTemperature.CELSIUS
 
     def __init__(self, airtouch2_aircon: At2Aircon) -> None:
         """Initialize the climate device."""
@@ -90,12 +90,12 @@ class Airtouch2ClimateEntity(ClimateEntity):
         return list(AT2_TO_HA_MODE.values()) + [HVACMode.OFF]
 
     @property
-    def current_temperature(self) -> float:
+    def native_current_temperature(self) -> float:
         """Return the current temperature."""
         return self._ac.info.measured_temp
 
     @property
-    def target_temperature(self) -> float:
+    def native_target_temperature(self) -> float:
         """Return the temperature we try to reach."""
         return self._ac.info.set_temp
 
